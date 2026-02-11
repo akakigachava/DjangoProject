@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "rest_framework",
     "drf_spectacular",
+    "django_filters",
+    "tasks",
 ]
 
 REST_FRAMEWORK = {
@@ -50,6 +52,10 @@ REST_FRAMEWORK = {
     ),
 
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+
+    #this is for pagination
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
 }
 
 

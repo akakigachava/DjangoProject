@@ -34,6 +34,7 @@ from DjangoProject.Views.RegisterView import RegisterView
 def hello(request):
     return Response({"message": "Hello, TaskBox API "})
 urlpatterns = [
+    path("api/", include("tasks.urls")),
     path('admin/', admin.site.urls),
     # path("api/", include("tasks.urls")),
     # path("api/auth/", include("accounts.urls")),
