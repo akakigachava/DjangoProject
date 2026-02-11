@@ -17,3 +17,4 @@ class RegisterSerializer(serializers.ModelSerializer):
 class RegisterView(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = RegisterSerializer
+
