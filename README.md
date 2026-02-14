@@ -1,4 +1,8 @@
 # TaskBox API — REST
+- JWT Authentication (login/refresh)
+- CRUD for tasks
+- Pagination (page size 10)
+- Filtering / Search / Ordering
 
 ## გაშვების ინსტრუქცია (Setup Instructions)
 
@@ -12,8 +16,8 @@
 
 1. **რეპოზიტორის კლონირება:**
 ```bash
-git clone 
-cd 
+git clone https://github.com/akakigachava/DjangoProject.git
+cd DjangoProject
 ```
 
 2. **ვირტუალური გარემოს შექმნა და გააქტიურება:**
@@ -31,14 +35,13 @@ pip install -r requirements.txt
 ```
 
 4. **გარემოს ცვლადების კონფიგურაცია:**
-შექმენი `.env` ფაილი პროექტის root დირექტორიაში:
+შექმენი `.env` ფაილი პროექტის root დირექტორიში:
 ```env
+SECRET_KEY=some_random_generated_key
 DEBUG=True
-SECRET_KEY=your-secret-key-here
-DATABASE_URL=sqlite:///db.sqlite3
-# ან PostgreSQL-ისთვის:
-# DATABASE_URL=postgresql://user:password@localhost:5432/dbname
 ```
+.env ფაილი იგნორირებულია git-ის მიერ და არ აიტვირთება GitHub-ზე.
+
 
 5. **მიგრაციების გაშვება:**
 ```bash
@@ -53,6 +56,18 @@ python manage.py runserver
 ```
 
 7. **აპლიკაცია გაეშვება:** `http://127.0.0.1:8000/`
+
+
+API დოკუმენტაცია
+
+Swagger UI:
+http://127.0.0.1:8000/api/docs/
+
+ReDoc:
+http://127.0.0.1:8000/api/redoc/
+
+OpenAPI Schema:
+http://127.0.0.1:8000/api/schema/
 
 
 ## Authentication Flow
@@ -77,21 +92,60 @@ Authorization: Bearer <your-access-token>
 ### 1. Login (JWT Token მიღება)
 ```bash
 
-curl -X POST http://127.0.0.1:8000/api/auth/token/ \
+1) რეგისტრაცია
+curl -X POST http://127.0.0.1:8000/api/auth/register/ \
 -H "Content-Type: application/json" \
 -d '{"username":"user1","password":"password123"}'
 
+
+2) Login (JWT token მიღება)
+curl -X POST http://127.0.0.1:8000/api/auth/login/ \
+-H "Content-Type: application/json" \
+-d '{"username":"user1","password":"password123"}'
+
+3) Refresh token
+curl -X POST http://127.0.0.1:8000/api/auth/refresh/ \
+-H "Content-Type: application/json" \
+-d '{"refresh":"REFRESH_TOKEN_HERE"}'
+
+4) task-ების მოძებნა კონკრეტული user-ისთვის (GET)
 curl -X GET http://127.0.0.1:8000/api/tasks/ \
 -H "Authorization: Bearer TOKEN"
 
+5) task-ის შექმნა (POST)
+curl -X POST http://127.0.0.1:8000/api/tasks/ \
+-H "Authorization: Bearer TOKEN" \
+-H "Content-Type: application/json" \
+-d '{"title":"Math homework","description":"Chapter 3","priority":"LOW"}'
+
+6) task-ის ძებნა id-ით
 curl -X GET http://127.0.0.1:8000/api/tasks/1/ \
 -H "Authorization: Bearer TOKEN"
 
+7) ამოცანის განახლება (PATCH)
+curl -X PATCH http://127.0.0.1:8000/api/tasks/1/ \
+-H "Authorization: Bearer TOKEN" \
+-H "Content-Type: application/json" \
+-d '{"is_done": true}'
+
+
+8) task-ის წაშლა
 curl -X DELETE http://127.0.0.1:8000/api/tasks/1/ \
 -H "Authorization: Bearer TOKEN"
 
-curl -X GET "http://localhost:8000/api/tasks/?priority=HIGH" 
+
+9) ფილტრაციის მაგალითები
+curl -X GET "http://127.0.0.1:8000/api/tasks/?priority=HIGH" \
 -H "Authorization: Bearer TOKEN"
 
-curl -X GET "http://localhost:8000/api/tasks/?is_done=false" 
+curl -X GET "http://127.0.0.1:8000/api/tasks/?is_done=false" \
 -H "Authorization: Bearer TOKEN"
+
+
+---
+
+## ტესტების გაშვება (Running Tests)
+პროექტში გამოყენებულია Django-ის built-in testing framework.
+ტესტების გასაშვებად:
+```bash
+python manage.py test

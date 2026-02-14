@@ -37,6 +37,6 @@ urlpatterns = [
 
     path("api/auth/login/", TokenObtainPairView.as_view(), name="jwt-login"),
     path("api/auth/refresh/", TokenRefreshView.as_view(), name="jwt-refresh"),
-    path("api/", include("users.urls")),
+    path("api/auth/", include("users.urls")),
 
 ]
